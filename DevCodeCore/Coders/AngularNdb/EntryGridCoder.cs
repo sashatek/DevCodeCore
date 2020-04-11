@@ -63,12 +63,7 @@ export class TripEntryGridComponent implements OnInit {
 
     private initFormItem(model: TripModel) {
         return this.fb.group({
-            tripDate: [model.tripDate, Validators.required],
-            airport: [model.airport, Validators.required],
-            transTypeId: [model.transTypeId, Validators.required],
-            groupName: [model.groupName, Validators.required],
-            groupSize: [model.groupSize, Validators.required]
-        });
+$$assign1$$});
     }
 
     onGetTrips(trips: TripModel[]) {
@@ -83,8 +78,9 @@ export class TripEntryGridComponent implements OnInit {
 
     // CRUD
     save(index: number, form: FormGroup) {
-        this.trip.model = this.trip.list[index];
-        const model: TripModel = { ...this.trip.model, ...form.value };
+        const model = this.trip.model = this.trip.list[index];
+        // const model: TripModel = { ...this.trip.model, ...form.value };
+$$assign2$$
         form.markAsPristine();
         form.markAsUntouched();
         if (model.isNew) {
@@ -95,7 +91,7 @@ export class TripEntryGridComponent implements OnInit {
             this.tripService.saveTrip(model)
                 .subscribe(_ => { });
         }
-        this.trip.updateModel(model);
+        // this.trip.updateModel(model);
     }
 
     cancel(index: number) {
@@ -116,7 +112,6 @@ export class TripEntryGridComponent implements OnInit {
 
     private addLine() {
         const model = new TripModel();
-        TripModel.onGet(model);
         this.trip.list.push(model);
         this.tripForms.push(this.initFormItem(model));
         return model;
@@ -131,9 +126,43 @@ export class TripEntryGridComponent implements OnInit {
             snippet.desription = "Angular UI Component";
             snippet.code = replaceNames(defs, template);
 
+            var assign1 = makeFormGroup(defs,3);
+            var assign2 = makeFormGetValue(defs,2);
+            snippet.code = snippet.code
+                 .Replace("$$assign1$$", assign1)
+                 .Replace("$$assign2$$", assign2);
             return snippet;
         }
 
+        public string makeFormGroup(EntityModel defs, int nest)
+        {
+            var writer = new CodeWriter();
+            writer.nest(nest);
+            for (int i = 0; i < defs.fieldDefs.Count; i++)
+            {
+                var field = defs.fieldDefs[i];
+                if (field.editable)
+                {
+                    var validator = field.required ? ", Validators.required" : "";
+                    var comma = i == defs.fieldDefs.Count - 1 ? "" : ", ";
+                    writer.writeLine($"{field.fieldNameLower}: [model.{field.fieldNameLower}{validator}]{comma}");
+                }
+            }
+            return writer.toString();
+        }
+        public string makeFormGetValue(EntityModel defs, int nest)
+        {
+            var writer = new CodeWriter();
+            writer.nest(nest);
+            foreach (var field in defs.fieldDefs)
+            {
+                if (field.editable)
+                {
+                    writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
+                }
+            }
+            return writer.toString();
+        }
         public Snippet codeHtml(EntityModel defs)
         {
             string startTemplate = @"
@@ -192,9 +221,9 @@ export class TripEntryGridComponent implements OnInit {
 </form>";
 
 
-//            var endtemplate = @"
+            //            var endtemplate = @"
 
-//";
+            //";
 
             var writer = new CodeWriter();
             var snippet = new Snippet();

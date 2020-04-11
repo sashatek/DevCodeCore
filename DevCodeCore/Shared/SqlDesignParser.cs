@@ -17,6 +17,10 @@ namespace DevCodeCore.Shared
 
             foreach (var field in line)
             {
+                if (field.StartsWith("--"))
+                {
+                    continue;
+                }
                 string[] attrs = field.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
                 if (attrs[0] == "*")
                 {
@@ -35,17 +39,23 @@ namespace DevCodeCore.Shared
                                 case "upper":
                                     entityDef.forceFirstLower = !(opts[1] == "1" || opts[1] == "true") ? true : false;
                                     break;
+                                case "lookup":
+                                    var tag = TextHelpers.splitToWords(opts[1]).Replace(" ","-");
+                                    var control = new ControlModel()
+                                    {
+                                        controlName = opts[1],
+                                        tagName = TextHelpers.splitToWords(opts[1]).Replace(" ", "-"),
+                                        type = ControlType.TypeAheadSvc
+                                    };
+                                    entityDef.controls.Add(control);
+                                    break;
                             }
                         }
 
                     }
                     continue;
                 }
-                    if (attrs.Length == 1)
-                {
-                    entityDef.entityName = attrs[0];
-                    continue;
-                }
+
                 var def = new FieldModel();
                 def.fieldName = attrs[0];
                 string[] types = attrs[1].Split(':');
@@ -55,7 +65,7 @@ namespace DevCodeCore.Shared
                 def.isNullable = attrs[2] == "Checked";
                 def.required = !def.isNullable;
 
-                string label = Regex.Replace(def.fieldName, "([a-z])([A-Z])", "$1 $2");
+                string label = TextHelpers.splitToWords(def.fieldName);
                 def.label = label;
                 def.tableLabel = label;
                 def.editable = true;
@@ -75,18 +85,41 @@ namespace DevCodeCore.Shared
                         var opts = attrs[i].Split(':');
                         if (opts.Length == 2)
                         {
-                            var a = opts[0].ToLower() switch
+                            switch(opts[0].ToLower())
                             {
-                                "label" => def.label = opts[1].Replace("_", " "),
-                                "l" => def.label = opts[1].Replace("_", " "),
-                                "lbl" => def.label = opts[1].Replace("_", " "),
-                                "control" => (def.controlType = formControlType(opts[1])).ToString(),
-                                "c" => (def.controlType = formControlType(opts[1])).ToString(),
-                                "ctl" => (def.controlType = formControlType(opts[1])).ToString(),
-                                "service" => def.lookupName = def.operand1 = opts[1],
-                                "s" => def.lookupName = def.operand1 = opts[1],
-                                "svc" => def.lookupName = def.operand1 = opts[1],
-                                _ => "Unknown Attribute type"
+                                case "label":
+                                case "l":
+                                   def.label = opts[1].Replace("_", " ");
+                                    break;
+
+                                case "control":
+                                case "c": 
+                                    def.controlType = formControlType(opts[1]);
+                                    break;
+
+                                case "service":
+                                case "s":
+                                   def.lookupName = def.operand1 = opts[1];
+                                    break;
+
+                                case "ref":
+                                case "r":
+                                    if (opts[1] == "1")
+                                    {
+                                        def.refDataType = 1;
+                                        def.refDataName = "LookupItem";
+                                    }
+                                    else if (opts[1] == "0")
+                                    {
+                                        def.refDataType = 0;
+                                        def.refDataName = "Info";
+                                    }
+                                    else
+                                    {
+                                        def.refDataType = 1;
+                                        def.refDataName = opts[1];
+                                    }
+                                    break;      
                             };
                         }
                     }
@@ -94,6 +127,10 @@ namespace DevCodeCore.Shared
                 defs.Add(def);
                 var f = lookupField(def);
                 if (f != null)
+                {
+                    defs.Add(f);
+                }
+                if ((f = dropDownField(def)) != null)
                 {
                     defs.Add(f);
                 }
@@ -276,13 +313,33 @@ namespace DevCodeCore.Shared
             f.lookup = false;
             if (f.controlType == ControlType.TypeAheadSvc ||
                 f.controlType == ControlType.TypeAhead ||
-                f.controlType == ControlType.Dropdown)
+                f.refDataType == 1)
             {
+                f.showOnForm = false;
+                f.editable = false;
                 field = new FieldModel();
                 field.lookup = true;
                 field.fieldName = TextHelpers.removeId(f.fieldName) + "Info";
                 field.controlType = f.controlType;
                 field.fieldLink = f;
+                field.editable = true;
+            }
+            return field;
+        }
+        public FieldModel dropDownField(FieldModel f)
+        {
+            FieldModel field = null;
+            f.lookup = false;
+            if (f.controlType == ControlType.Dropdown)
+            {
+                field = new FieldModel();
+                field.fieldName = f.operand1 == null ? TextHelpers.removeId(f.fieldName) + "Desc" : f.operand1;
+                field.controlType = f.controlType;
+                field.fieldType = FieldType.String;
+                field.showOnForm = false;
+                field.showInTable = true;
+                field.editable = false;
+                field.doNotSave = true; ;
             }
             return field;
         }

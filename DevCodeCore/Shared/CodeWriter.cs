@@ -65,7 +65,7 @@ namespace DevGen.Coder
 
         public void writeLine(String s)
         {
-            if (isFirstSmbolB)
+            if (isFirstSmbolB && !String.IsNullOrEmpty(s))
             {
                 writeIdent();
             }

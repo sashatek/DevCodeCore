@@ -1,4 +1,5 @@
-﻿using DevCodeCore.Coders.NetCore;
+﻿using DevCodeCore.Coders.AngularNdb;
+using DevCodeCore.Coders.NetCore;
 using DevCodeCore.Coders.WebClient;
 using DevCodeCore.DAL;
 using DevCodeCore.Model;
@@ -27,6 +28,7 @@ namespace DevCodeCore.Pages
             {
                 GenMode.Models => getModelCode(defs),
                 GenMode.CrudRest => getRestCrudCode(defs),
+                GenMode.EntryGrid => getEntryGridCode(defs),
                 _ => null
             };
 
@@ -54,6 +56,18 @@ namespace DevCodeCore.Pages
             var coder2 = new CsCrudCoder();
             list.Add(coder2.codeController(defs));
             list.Add(coder2.codeDao(defs));
+
+            return list.ToArray();
+        }
+        public Snippet[] getEntryGridCode(EntityModel defs)
+        {
+            var list = new List<Snippet>();
+
+            var coder = new EntryGridCoder();
+            list.Add(coder.codeController(defs));
+
+            list.Add(coder.codeHtml(defs));
+            list.Add(coder.codeCss(defs));
 
             return list.ToArray();
         }

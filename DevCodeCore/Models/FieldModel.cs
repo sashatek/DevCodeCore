@@ -38,6 +38,9 @@ namespace DevCodeCore.Model
         public bool showInTable { get; set; }
         public bool editable { get; set; }
         public bool lookup { get; set; }
+        public int refDataType { get; set; } // 0 - no, 1 - first. 2- second
+        public string refDataName { get; set; }
+        public bool doNotSave { get; set; }
         public FieldModel fieldLink { get; set; }
 
     }

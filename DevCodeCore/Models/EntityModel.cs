@@ -21,6 +21,7 @@ namespace DevCodeCore.Model
         public string srcText { get; set; }
         public bool forceFirstLower { get; set; }
         public List<FieldModel> fieldDefs { get; set; }
+        public List<ControlModel> controls { get; set; }
         public string asController { get; set; }
         public string moduleName { get; set; }
         public string theAppName { get; set; }
@@ -32,6 +33,7 @@ namespace DevCodeCore.Model
             asController = "$ctrl";
             moduleName = "TheAppModule";
             theAppName = "TheApp";
+            controls = new List<ControlModel>();
         }
     }
 }

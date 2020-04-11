@@ -8,6 +8,7 @@ using DevCodeCore.Pages;
 using DevCodeCore.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DevCodeWeb
 {
@@ -19,6 +20,9 @@ namespace DevCodeWeb
         [BindProperty]
         public GenMode genMode { get; set; }
         public bool upperCase { get; set; }
+        [BindProperty]
+        public int controlId { get; set; }
+        public List<SelectListItem> controls { get; set; }
         public void OnGet()
         {
             var set = new RestCrudSet();
@@ -30,7 +34,11 @@ namespace DevCodeWeb
             var parser = new SqlDesignParser();
             var defs = new EntityModel();
             parser.parse(scrText, defs);
-
+            controls = defs.controls.Select((c, i)=>new SelectListItem
+            {
+                Value = i.ToString(),
+                Text  = c.controlName
+            }).ToList();
             var set = new RestCrudSet();
             snippets = set.getCode(genMode, defs);
         }

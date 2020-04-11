@@ -245,12 +245,12 @@ $$assign2$$
             snippet.language = Language.CSharp;
             snippet.desription = "Implemets REST CRUD Controller";
 
-            var assing = assignToModel(defs, 5);
-            var assing2 = assignToEntity(defs, 4);
+            var assign = assignToModel(defs, 5);
+            var assign2 = assignToEntity(defs, 4);
             snippet.code = replaceNames(defs, daoTemplate);
             snippet.code = snippet.code
-                .Replace("$$assign$$", assing)
-                .Replace("$$assign2$$", assing2);
+                .Replace("$$assign$$", assign)
+                .Replace("$$assign2$$", assign2);
 
             return  snippet;
         }
@@ -284,11 +284,14 @@ $$assign2$$
             {
                 if (field.lookup)
                 {
-                    writer.writeLine($"// {entity.entityNameLower}.{field.fieldLink.fieldNameLower} = model.{field.fieldName}.id");
+                    writer.writeLine($"// {entity.entityNameLower}.{field.fieldLink.fieldName} = model.{field.fieldNameLower}.id");
                 }
                 else
                 {
-                    writer.writeLine($"{entity.entityNameLower}.{field.fieldNameLower} = model.{field.fieldName}");
+                    if(!field.doNotSave)
+                    {
+                        writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower}");
+                    }
                 }
             }
 

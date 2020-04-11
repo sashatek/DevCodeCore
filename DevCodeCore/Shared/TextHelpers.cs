@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DevCodeCore.Shared
 {
@@ -18,6 +19,11 @@ namespace DevCodeCore.Shared
             }
             return s;
         }
+        public static string splitToWords(string s)
+        {
+            return Regex.Replace(s, "([a-z])([A-Z])", "$1 $2");
+        }
+
         //public static LookupItem[] enumToLookup(System.Enum e)
         //{
         //    var values = from Enum e in Enum.GetValues(typeof (Enum))

@@ -13,19 +13,19 @@ namespace DevCodeCore.Coders.WebClient
         public Snippet codeModel(EntityModel defs)
         {
             var snippet = new Snippet();
-            snippet.header = "Client side Model";
+            snippet.header = "Client Side Model";
             snippet.language = Language.TypeScript;
-            snippet.desription = "Client side webAPI View, Domain model";
+            snippet.desription = "Client Side WebAPI Model";
 
             CodeWriter writer = new CodeWriter();
             writer.writeLine("");
-            writer.writeLine($"class {defs.entityName}Model");
-            writer.openCurly();
+            writer.writeLine($"export class {defs.entityName}Model {{");
+            writer.nest();
             foreach (var f in defs.fieldDefs)
             {
                 if (f.lookup)
                 {
-                    writer.writeLine($"{f.fieldNameLower} : LookupItem;");
+                    writer.writeLine($"{f.fieldNameLower}: ILookupItem;");
                     continue;
                 }
                 string type = "any";
@@ -50,7 +50,7 @@ namespace DevCodeCore.Coders.WebClient
                         type = "Date";
                         break;
                 }
-                writer.writeLine($"{f.fieldNameLower} : {type};");
+                writer.writeLine($"{f.fieldNameLower}: {type};");
                 //if (f.controlType == ControlType.Dropdown
                 //    || f.controlType == ControlType.TypeAhead
                 //    || f.controlType == ControlType.TypeAheadSvc)
@@ -65,7 +65,7 @@ namespace DevCodeCore.Coders.WebClient
                 //}
             }
             writer.writeLine("");
-            writer.writeLine("isNew : boolean;");
+            writer.writeLine("isNew: boolean;");
             writer.closeCurly();
    
             snippet.code = writer.toString();
