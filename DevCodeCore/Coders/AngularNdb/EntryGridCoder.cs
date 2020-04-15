@@ -1,5 +1,4 @@
-﻿using DevCodeCore.Model;
-using DevCodeCore.Models;
+﻿using DevCodeCore.Models;
 using DevGen.Coder;
 using System;
 using System.Collections.Generic;
@@ -134,35 +133,7 @@ $$assign2$$
             return snippet;
         }
 
-        public string makeFormGroup(EntityModel defs, int nest)
-        {
-            var writer = new CodeWriter();
-            writer.nest(nest);
-            for (int i = 0; i < defs.fieldDefs.Count; i++)
-            {
-                var field = defs.fieldDefs[i];
-                if (field.editable)
-                {
-                    var validator = field.required ? ", Validators.required" : "";
-                    var comma = i == defs.fieldDefs.Count - 1 ? "" : ", ";
-                    writer.writeLine($"{field.fieldNameLower}: [model.{field.fieldNameLower}{validator}]{comma}");
-                }
-            }
-            return writer.toString();
-        }
-        public string makeFormGetValue(EntityModel defs, int nest)
-        {
-            var writer = new CodeWriter();
-            writer.nest(nest);
-            foreach (var field in defs.fieldDefs)
-            {
-                if (field.editable)
-                {
-                    writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
-                }
-            }
-            return writer.toString();
-        }
+ 
         public Snippet codeHtml(EntityModel defs)
         {
             string startTemplate = @"
@@ -280,7 +251,7 @@ $$assign2$$
 
             return snippet;
         }
-        public Snippet CoderTest(EntityModel defs)
+        public Snippet codeTest(EntityModel defs)
         {
             var template = @"
 
@@ -294,67 +265,7 @@ $$assign2$$
             return snippet;
         }
 
-        private string codeHtmlControl(FieldModel field, string entityName)
-        {
-            var html = "";
-            var name = field.fieldNameLower;
-            var service = field.operand1;
-            var required = field.isNullable ? "" : "required";
 
-            switch (field.controlType)
-            {
-                case ControlType.Text:
-                    html = $@"<input type=""text"" class=""form-control"" formControlName=""{name}"" {required}>";
-                    break;
-                case ControlType.TextArea:
-                    html = $@"<textarea type = ""text"" class=""form-control"" formControlName=""{name}"" rows=""10"" {required}></textarea>";
-                    break;
-                case ControlType.Date:
-                    break;
-                case ControlType.Email:
-                    html = $@"<input type=""email"" class=""form-control"" formControlName=""{name}"" {required}>";
-                    break;
-                case ControlType.DatePicker:
-                    html = $@"<input type=""text"" ngbDatepicker #d=""ngbDatepicker"" class=""form-control date-box""
-    formControlName=""{name}"" {required} [displayMonths]=""'2'"">
-<div class=""input-group-append"">
-    <button class=""btn btn-outline-secondary calendar"" (click)=""d.toggle()"" type=""button""></button>
-</div>";
-                    break;
-                case ControlType.TimePicker:
-                    break;
-                case ControlType.Dropdown:
-                    html = $@"<select class=""form-control"" id=""transType"" formControlName=""{name}""
-    (change)=""onTransTypeChange($event, model)"" {required}>
-    <option* ngFor = ""let tran of refService.ref.{service}""[value] = ""tran.value"" >{{tran.text}}</option>
-</select>";
-                    break;
-
-                case ControlType.TypeAhead:
-                    html = "";
-                    break;
-
-                case ControlType.TypeAheadSvc:
-                    html = $@"<input id = ""typeahead-http"" type=""text"" class=""form-control"" formControlName=""{name}""  [ngbTypeahead]=""{service}""
-    (selectItem)=""select($event)"" [inputFormatter]=""formatter"" [resultFormatter]=""formatterr""
-    onfocus=""this.select();"" onmouseup=""return false;"" {required}/>";
-                    break;
-                case ControlType.Number:
-                    html = $@"<input type=""number"" class=""form-control"" formControlName=""{name}"" {required}>";
-                    break;
-                case ControlType.CheckBox:
-                    html = $@"<input type=""checkbox"" class=""form-control"" formControlName=""{name}"" {required}>";
-                    break;
-                case ControlType.Component:
-                    html = $@"<{service} [model]=""model.{name}"" (onArptSelect)=""arptSelect($event)"" 
-    [parentForm]=""{entityName}Form"" [formFieldName]=""""{name}"""">
-</{service}>";
-                    break;
-
-            }
-
-            return html;
-        }
     }
 
 }

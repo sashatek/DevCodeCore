@@ -1,5 +1,4 @@
-﻿using DevCodeCore.Model;
-using DevCodeCore.Models;
+﻿using DevCodeCore.Models;
 using DevGen.Coder;
 using System;
 using System.Collections.Generic;

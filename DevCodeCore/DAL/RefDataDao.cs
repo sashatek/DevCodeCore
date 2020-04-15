@@ -1,5 +1,4 @@
-﻿using DevCodeCore.Model;
-using DevCodeCore.Models;
+﻿using DevCodeCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,11 +41,11 @@ namespace DevCodeCore.DAL
             model.defTpl.entityName = "N/A";
 
             model.defTpl.srcText = @"-- Remove the code below and copy/paste yours
-* e:Trip lookup:AirportLookup
+* e:Trip
 TripId	int	Unchecked
 TripDate	datetime	Unchecked ? DP
---AirportId	int	Unchecked l:Airport c:TA s:ArptLookup
-AirportId	int	Unchecked label:Airport control:comp service:arpt-lookup ref:1
+--AirportId	int	Unchecked l:Airport c:TAS s:ArptLookup
+AirportId	int	Unchecked label:Airport control:tas comp:Arpt ref:1
 TransTypeId	int	Unchecked lbl:Trans_Mode s:TransTypeDesc
 GroupName	varchar(50)	Unchecked
 GroupSize	int	Unchecked

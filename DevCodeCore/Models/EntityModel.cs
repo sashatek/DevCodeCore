@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevCodeCore.Model
+namespace DevCodeCore.Models
 {
 
     public class EntityModel
@@ -22,6 +22,7 @@ namespace DevCodeCore.Model
         public bool forceFirstLower { get; set; }
         public List<FieldModel> fieldDefs { get; set; }
         public List<ControlModel> controls { get; set; }
+        public ControlModel control { get; set; }
         public string asController { get; set; }
         public string moduleName { get; set; }
         public string theAppName { get; set; }

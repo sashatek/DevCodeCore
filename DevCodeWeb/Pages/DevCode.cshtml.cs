@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevCodeCore.Model;
 using DevCodeCore.Models;
 using DevCodeCore.Pages;
 using DevCodeCore.Shared;
@@ -39,6 +38,7 @@ namespace DevCodeWeb
                 Value = i.ToString(),
                 Text  = c.controlName
             }).ToList();
+            defs.control = defs.controls.Count > 0 ? defs.controls[controlId] : null;
             var set = new RestCrudSet();
             snippets = set.getCode(genMode, defs);
         }

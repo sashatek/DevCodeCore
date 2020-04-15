@@ -5,7 +5,7 @@
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
     <form method="post">
-        <div class="row">
+        <div class="row" id="top">
             <div class="col-4">
                 <div class="form-group">
                     <label asp-for="genMode">Dialog</label>
@@ -35,18 +35,22 @@
         <textarea rows="15" class="form-control" asp-for="@Model.scrText" asp-page="DevCode"></textarea>
         <button formaction="DevCode" class="btn btn-outline-primary">Generate Code</button>
     </form>
-<div>
-    @if (Model.snippets != null)
-    {
-        @foreach (var sn in Model.snippets)
+    <div>
+        @if (Model.snippets != null)
         {
-            <h2 style="margin-top:50px;">@sn.header</h2>
-            <p>@sn.desription</p>
-            <pre class="prettyprint">
+            @foreach (var sn in Model.snippets)
+            {
+                <h2 style="margin-top:50px;">@sn.header</h2>
+                <p>@sn.desription</p>
+                <pre class="prettyprint">
             @sn.code
         </pre>
+                <a href="#top">Go to the top</a>
+            }
         }
-    }
-</div>
+    </div>
 
 <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+<script>
+    window.onload = (function () { prettyPrint(); });
+</script>

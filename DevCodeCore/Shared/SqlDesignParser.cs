@@ -1,5 +1,4 @@
-﻿using DevCodeCore.Model;
-using DevCodeCore.Models;
+﻿using DevCodeCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,17 +38,7 @@ namespace DevCodeCore.Shared
                                 case "upper":
                                     entityDef.forceFirstLower = !(opts[1] == "1" || opts[1] == "true") ? true : false;
                                     break;
-                                case "lookup":
-                                    var tag = TextHelpers.splitToWords(opts[1]).Replace(" ","-");
-                                    var control = new ControlModel()
-                                    {
-                                        controlName = opts[1],
-                                        tagName = TextHelpers.splitToWords(opts[1]).Replace(" ", "-"),
-                                        type = ControlType.TypeAheadSvc
-                                    };
-                                    entityDef.controls.Add(control);
-                                    break;
-                            }
+                             }
                         }
 
                     }
@@ -119,7 +108,26 @@ namespace DevCodeCore.Shared
                                         def.refDataType = 1;
                                         def.refDataName = opts[1];
                                     }
-                                    break;      
+                                    break;
+
+                                case "comp":
+                                    var tag = "app-" + TextHelpers.splitToWords(opts[1].ToLower()).Replace(" ", "-");
+                                    if (def.controlType == ControlType.TypeAhead ||
+                                        def.controlType == ControlType.TypeAheadSvc)
+                                    {
+                                        tag += "-lookup";
+                                    }
+                                    var control = new ControlModel()
+                                    {
+                                        controlName = opts[1],
+                                        controlNameLower = TextHelpers.toLowerFirst(opts[1]),
+                                        tagName = tag,
+                                        type = def.controlType
+                                    };
+                                    entityDef.controls.Add(control);
+                                    def.controlLink = control;
+                                    break;
+
                             };
                         }
                     }
@@ -239,50 +247,23 @@ namespace DevCodeCore.Shared
 
         public static ControlType formControlType(string name)
         {
-            var controlType = ControlType.Text;
-
-            switch (name.ToLower())
+            return name.ToLower() switch
             {
-                case "number":
-                    controlType = ControlType.Number;
-                    break;
-                case "email":
-                    controlType = ControlType.Email;
-                    break;
-                case "date":
-                    controlType = ControlType.Date;
-                    break;
-                case "textarea":
-                    controlType = ControlType.TextArea;
-                    break;
-                case "area":
-                    controlType = ControlType.TextArea;
-                    break;
-                case "text":
-                    controlType = ControlType.Text;
-                    break;
-                case "check":
-                    controlType = ControlType.CheckBox;
-                    break;
-                case "datepicker":
-                    controlType = ControlType.DatePicker;
-                    break;
-                case "dp":
-                    controlType = ControlType.DatePicker;
-                    break;
-                case "typeahead":
-                    controlType = ControlType.TypeAheadSvc;
-                    break;
-                case "ta":
-                    controlType = ControlType.TypeAheadSvc;
-                    break;
-                case "comp":
-                    controlType = ControlType.Component;
-                    break;
-
-            }
-
-            return controlType;
+                "number" => ControlType.Number,
+                "email" => ControlType.Email,
+                "date" => ControlType.Date,
+                "textarea" => ControlType.TextArea,
+                "area" => ControlType.TextArea,
+                "text" => ControlType.Text,
+                "check" => ControlType.CheckBox,
+                "datepicker" => ControlType.DatePicker,
+                "dp" => ControlType.DatePicker,
+                "tas" => ControlType.TypeAheadSvc,
+                "typeaheadSvc" => ControlType.TypeAheadSvc,
+                "ta" => ControlType.TypeAhead,
+                "typeahead" => ControlType.TypeAhead,
+                _ => ControlType.Text
+            };
         }
 
 
@@ -323,6 +304,9 @@ namespace DevCodeCore.Shared
                 field.controlType = f.controlType;
                 field.fieldLink = f;
                 field.editable = true;
+                field.controlLink = f.controlLink;
+                field.showOnForm = true;
+                
             }
             return field;
         }

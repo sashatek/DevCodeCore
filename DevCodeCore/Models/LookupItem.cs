@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevCodeCore.Model
+namespace DevCodeCore.Models
 {
     public class LookupItem
     {

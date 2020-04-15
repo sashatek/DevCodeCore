@@ -10,11 +10,11 @@ namespace DevCodeCore.Models
         CrudRest,
         EntryGrid,
         Form,
-        PopupForm,
+        Modal,
         NavToForm,
-        SideForm,
-        Dropdown,
-        AutocompleteService
+        MasterDetal,
+        RefData,
+        TypeAheadControl
     }
 
 }

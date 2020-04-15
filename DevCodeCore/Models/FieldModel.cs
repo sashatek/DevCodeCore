@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevCodeCore.Model
+namespace DevCodeCore.Models
 {
     public class FieldModel
     {
@@ -42,6 +42,7 @@ namespace DevCodeCore.Model
         public string refDataName { get; set; }
         public bool doNotSave { get; set; }
         public FieldModel fieldLink { get; set; }
+        public ControlModel controlLink { get; set; }
 
     }
 }

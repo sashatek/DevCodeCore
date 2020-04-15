@@ -2,7 +2,7 @@
 using DevCodeCore.Coders.NetCore;
 using DevCodeCore.Coders.WebClient;
 using DevCodeCore.DAL;
-using DevCodeCore.Model;
+using DevCodeCore.Models;
 using DevCodeCore.Shared;
 using System;
 using System.Collections.Generic;
