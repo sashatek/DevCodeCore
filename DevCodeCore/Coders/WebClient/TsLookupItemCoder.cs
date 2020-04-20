@@ -22,7 +22,7 @@ export interface ILookupItem {
             var snippet = new Snippet();
             snippet.header = "Lookup Item Model, Client Side";
             snippet.language = Language.TypeScript;
-            snippet.desription = "";
+            snippet.desription = "Web API Generic Reference Data Model";
 
             snippet.code = replaceNames(defs, template);
 

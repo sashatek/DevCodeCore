@@ -12,7 +12,7 @@ namespace DevCodeCore.DAL
             var model = new InitModel();
 
             model.sqlDesignText = @"-- Remove the code below and copy/paste yours
-* e:Trip
+* e:Trip d:DevCode
 TripId	int	Unchecked
 TripDate	datetime	Unchecked ? DP
 --AirportId	int	Unchecked l:Airport c:TA s:ArptLookup

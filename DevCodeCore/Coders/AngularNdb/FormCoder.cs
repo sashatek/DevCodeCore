@@ -33,7 +33,7 @@ export class TripFormComponent implements OnInit {
   @Input() set model(value: TripModel) {
     this._model = value;
     if (value !== null) {
-      this.initForm();
+      this.initForm(this.model);
     }
   }
 
@@ -56,7 +56,7 @@ export class TripFormComponent implements OnInit {
               private arptService: ArptLookupService,
               public refDataService: RefDataService,
               private fb: FormBuilder) {
-    this.initForm();
+    this.initForm(this.model);
   }
 
   ngOnInit() {
@@ -65,40 +65,37 @@ export class TripFormComponent implements OnInit {
 
   // ngOnChanges(changes: SimpleChanges): void {
   //   if(changes['model']) {
-  //     this.initForm();
+  //     this.initForm(this.model);
   //   }
   // }
   setModel(model: TripModel) {
     this.model = model;
-    this.initForm();
+    this.initForm(this.model);
     // this.tripForm.reset(model);
   }
-  private initForm() {
+  private initForm(model:TripModel) {
     this.tripForm = this.fb.group({
 $$assign1$$
     });
   }
 
   saveTrip() {
-    const a = this.tripForm.value;
     // this.model = {...this.model, ...this.tripForm.value};
-$$assign2$$
-    this.model.airportInfo = {...this.tripForm.value.airportInfo};
+    this.updateModel(this.model, this.tripForm);
+    this.initForm(this.model);
+
+    // model.airportInfo = {...this.tripForm.value.airportInfo};
     this.save.emit(this.model);
-    // this.tripForm.reset(this.model); TODO: chrck whether reset id nrrded
+    // this.tripForm.reset(this.model); TODO: check whether reset is needed
     // Object.keys(this.tripForm.controls).forEach(control => {
     //   this.tripForm.controls[control].markAsPristine();
     // });
   }
 
-  updateModel() {
-      const data = this.tripForm.value as TripModel;
-      this.model.tripDate = data.tripDate;
-      this.model.airportInfo = data.airportInfo;
-      this.model.transTypeId = data.transTypeId;
-      this.model.groupName = data.groupName;
-      this.model.groupSize = data.groupSize;
+  updateModel(model: TripModel, form: FormGroup) {
+$$assign2$$
   }
+
   isDitry() {
     return this.tripForm.dirty;
   }
@@ -107,7 +104,7 @@ $$assign2$$
   }
   cancelTrip() {
     this.cancel.emit(this.model);
-    this.initForm();
+    this.initForm(this.model);
   }
 
   deleteTrip() {
@@ -178,25 +175,19 @@ $$assign2$$
                 {
                     continue;
                 }
-                writer.writeLine(@$"<div class=""form-group"">");
-                writer.nest();
                 if (field.controlType == ControlType.CheckBox)
                 {
-                    writer.writeLine(@$"<div class=""form-check"">");
-                    writer.nest();
-                    writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
-                    writer.writeLine(@$"<label for=""{field.fieldNameLower}"" class=""form-check-label"">{field.label}</label>");
-                    writer.unNest();
-                    writer.writeLine("</div>");
-
+                    writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower, true));
                 }
                 else
                 {
+                    writer.writeLine(@$"<div class=""form-group"">");
+                    writer.nest();
                     writer.writeLine(@$"<label for=""{field.fieldNameLower}"" class=""control-label"">{field.label}</label>");
                     writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
+                    writer.unNest();
+                    writer.writeLine("</div>");
                 }
-                writer.unNest();
-                writer.writeLine("</div>");
             }
             writer.nest(0);
             writer.writeLine(endTemplate);

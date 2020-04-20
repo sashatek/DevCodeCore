@@ -156,7 +156,7 @@ namespace DevCodeCore.Coders.NetCore
             var tripModels = _db.Trip
                 .Include(t => t.Airport)
                 .Include(t => t.TransType)
-                .Select(t => new TripModel
+                .Select(e => new TripModel
                 {
 $$assign$$
                 });
@@ -169,7 +169,7 @@ $$assign$$
                 .Include(t => t.Airport)
                 .Include(t => t.TransType)
                 .Where(t=>t.TripId == tripId)
-                .Select(t => new TripModel
+                .Select(e => new TripModel
                 {
 $$assign$$
                 })
@@ -234,7 +234,7 @@ $$assign2$$
             snippet.desription = "Implemets REST CRUD Controller";
 
             snippet.code = replaceNames(defs, controllerTpl);
- 
+
             return snippet;
         }
         public Snippet codeDao(EntityModel defs)
@@ -251,24 +251,35 @@ $$assign2$$
                 .Replace("$$assign$$", assign)
                 .Replace("$$assign2$$", assign2);
 
-            return  snippet;
+            return snippet;
         }
 
         static string assignToModel(EntityModel entity, int nest)
         {
             var writer = new CodeWriter();
             writer.nest(nest);
-            foreach (var field in entity.fieldDefs)
+            for (int i = 0; i < entity.fieldDefs.Count; i++)
             {
-                if (field.lookup)
+                var field = entity.fieldDefs[i];
+                var comma = i == entity.fieldDefs.Count - 1 ? "" : ", ";
+                if (field.refDataType == 2)
                 {
-                    writer.writeLine($"{field.fieldNameLower} = new LookupItem()");
-                    writer.writeLine($"{field.fieldNameLower}.id = e.{field.fieldLink.fieldName}");
-                    writer.writeLine(@$"{field.fieldNameLower}.text = """"; // Add your text/desc field name");
+                    writer.writeLine($"// {field.fieldNameLower} = e.{field.fieldName}{comma}");
+                    writer.writeLine($"{field.fieldNameLower2} = new LookupItem()");
+                    writer.openCurly();
+                    writer.writeLine($"id = e.{field.fieldNameLower},");
+                    writer.writeLine(@$"text = """"{comma} // Add your text/desc field name like e.Airport.IataIdent{comma}");
+                    writer.unNest();
+                    writer.writeLine($"}}{comma}");
+                }
+                else if (field.refDataType == 1)
+                {
+                    writer.writeLine($"{field.fieldNameLower} = e.{field.fieldName}{comma}");
+                    writer.writeLine(@$"{field.fieldNameLower2} = """"{comma} // Add your text/desc field name like e.TransType.Description{comma}");
                 }
                 else
                 {
-                    writer.writeLine($"{field.fieldNameLower} = e.{field.fieldName}");
+                    writer.writeLine($"{field.fieldNameLower} = e.{field.fieldName}{comma}");
                 }
             }
 
@@ -281,16 +292,14 @@ $$assign2$$
             writer.nest(nest);
             foreach (var field in entity.fieldDefs)
             {
-                if (field.lookup)
+                if (field.refDataType == 2)
                 {
-                    writer.writeLine($"// {entity.entityNameLower}.{field.fieldLink.fieldName} = model.{field.fieldNameLower}.id");
+                    writer.writeLine($"// {entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower};");
+                    writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower2}.id; // Select one");
                 }
                 else
                 {
-                    if(!field.doNotSave)
-                    {
-                        writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower}");
-                    }
+                    writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower};");
                 }
             }
 

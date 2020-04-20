@@ -32,6 +32,15 @@ export class RefDataService {
     onGetRefs = (ref: RefDataModel) => {
         this.refData = ref;
     }
+
+    getRefDataById(refData: ILookupItem[], id: number){
+        for (const ref of refData) {
+            if (ref.id === id){
+                return ref;
+            }
+        }
+        return null;
+    }
 }
 ";
 

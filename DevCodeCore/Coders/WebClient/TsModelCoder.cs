@@ -12,9 +12,9 @@ namespace DevCodeCore.Coders.WebClient
         public Snippet codeModel(EntityModel defs)
         {
             var snippet = new Snippet();
-            snippet.header = "Client Side Model";
+            snippet.header = "Entity Model, Client Side";
             snippet.language = Language.TypeScript;
-            snippet.desription = "Client Side WebAPI Model";
+            snippet.desription = "Web API Domain model";
 
             CodeWriter writer = new CodeWriter();
             writer.writeLine("");
@@ -49,22 +49,20 @@ namespace DevCodeCore.Coders.WebClient
                         type = "Date";
                         break;
                 }
-                writer.writeLine($"{f.fieldNameLower}: {type};");
-                //if (f.controlType == ControlType.Dropdown
-                //    || f.controlType == ControlType.TypeAhead
-                //    || f.controlType == ControlType.TypeAheadSvc)
-                //{
-                //    writer.write(f.fieldNameLower);
-                //    writer.writeLine("_ : ILookupItem;");
-                //}
-                //if (f.controlType == ControlType.DatePicker
-                //    || f.controlType == ControlType.Date)
-                //{
-                //    writer.writeLine(f.fieldNameLower + "_ : " + type);
-                //}
+                var nullable = f.isNullable ? " | null" : "";
+                writer.writeLine($"{f.fieldNameLower}: {type}{nullable};");
+                if (f.refDataType == 1)
+                {
+                    writer.writeLine($"{f.fieldNameLower2}: string{nullable};");
+                }
+                if (f.refDataType == 2)
+                {
+                    writer.writeLine($"{f.fieldNameLower2}: LookupItem;");
+                }
+
             }
             writer.writeLine("");
-            writer.writeLine("isNew: boolean;");
+            writer.writeLine("isNew = true;");
             writer.closeCurly();
    
             snippet.code = writer.toString();

@@ -26,6 +26,8 @@ namespace DevCodeCore.Models
         public string asController { get; set; }
         public string moduleName { get; set; }
         public string theAppName { get; set; }
+        public string refText { get; set; }
+        public string refObject { get; set; }
 
         public EntityModel()
         {
@@ -35,6 +37,8 @@ namespace DevCodeCore.Models
             moduleName = "TheAppModule";
             theAppName = "TheApp";
             controls = new List<ControlModel>();
+            refText = "Text";
+            refObject = "Info";
         }
     }
 }

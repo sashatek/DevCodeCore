@@ -14,6 +14,8 @@ namespace DevCodeCore.Models
         public int name { get; set; }
         public string fieldName { get; set; }
         public string fieldNameLower { get; set; }
+        public string fieldName2 { get; set; }
+        public string fieldNameLower2 { get; set; }
         public int fieldTypeId { get; set; }
         public string dbFieldType { get; set; }
         
@@ -22,7 +24,8 @@ namespace DevCodeCore.Models
         public LookupItem fieldLookupItem { get; set; }
         public string label { get; set; }
         public string tableLabel { get; set; }
-        public int lookupType { get; set; }     // 1 - drop, 2 table;
+        public int lookupFieldType { get; set; }     // 0 none 1 - flat, 2 object;
+        public int lookupType { get; set; }     // 0 none 1 - flat, 2 object;
         public string lookupName { get; set; }
         public string lookupValue { get; set; }
         public string lookupText { get; set; }
@@ -31,6 +34,7 @@ namespace DevCodeCore.Models
         public bool isNullable { get; set; }
         public bool required { get; set; }
         public string operand1 { get; set; }
+        public string operandLower1 { get; set; }
 
         //Display attrs
         //
@@ -43,6 +47,11 @@ namespace DevCodeCore.Models
         public bool doNotSave { get; set; }
         public FieldModel fieldLink { get; set; }
         public ControlModel controlLink { get; set; }
+        public bool descField { get; set; }
 
+        public FieldModel()
+        {
+            refDataType = -1;
+        }
     }
 }

@@ -38,7 +38,15 @@ namespace DevCodeCore.Shared
                                 case "upper":
                                     entityDef.forceFirstLower = !(opts[1] == "1" || opts[1] == "true") ? true : false;
                                     break;
-                             }
+                                case "d":
+                                case "db":
+                                    entityDef.dbContext = opts[1];
+                                    break;
+                                case "r":
+                                case "ref":
+                                    entityDef.refText = opts[1];
+                                    break;
+                            }
                         }
 
                     }
@@ -54,7 +62,7 @@ namespace DevCodeCore.Shared
                 def.isNullable = attrs[2] == "Checked";
                 def.required = !def.isNullable;
 
-                string label = TextHelpers.splitToWords(def.fieldName);
+                string label = TextHelpers.splitToWords(TextHelpers.removeId(def.fieldName));
                 def.label = label;
                 def.tableLabel = label;
                 def.editable = true;
@@ -64,7 +72,7 @@ namespace DevCodeCore.Shared
                 {
                     def.controlType = ControlType.Dropdown;
                 }
-                def.lookupName = makeLookupName(def.fieldName);
+                 def.lookupName = makeLookupName(def.fieldName);
                 // If label specified
                 //
                 if (attrs.Length > 3)
@@ -93,21 +101,34 @@ namespace DevCodeCore.Shared
 
                                 case "ref":
                                 case "r":
-                                    if (opts[1] == "1")
-                                    {
-                                        def.refDataType = 1;
-                                        def.refDataName = "LookupItem";
-                                    }
-                                    else if (opts[1] == "0")
+                                    if (opts[1] == "0")
                                     {
                                         def.refDataType = 0;
-                                        def.refDataName = "Info";
+                                    }
+                                    else if (opts[1] == "1")
+                                    {
+                                        def.refDataType = 1;
                                     }
                                     else
                                     {
-                                        def.refDataType = 1;
-                                        def.refDataName = opts[1];
+                                        def.refDataType = 2;
                                     }
+
+                                    //if (opts[1] == "1")
+                                    //{
+                                    //    def.refDataType = 1;
+                                    //    def.refDataName = "LookupItem";
+                                    //}
+                                    //else if (opts[1] == "0")
+                                    //{
+                                    //    def.refDataType = 0;
+                                    //    def.refDataName = "Info";
+                                    //}
+                                    //else
+                                    //{
+                                    //    def.refDataType = 1;
+                                    //    def.refDataName = opts[1];
+                                    //}
                                     break;
 
                                 case "comp":
@@ -133,15 +154,15 @@ namespace DevCodeCore.Shared
                     }
                 }
                 defs.Add(def);
-                var f = lookupField(def);
-                if (f != null)
-                {
-                    defs.Add(f);
-                }
-                if ((f = dropDownField(def)) != null)
-                {
-                    defs.Add(f);
-                }
+                //var f = lookupField(def);
+                //if (f != null)
+                //{
+                //    defs.Add(f);
+                //}
+                //if ((f = dropDownField(def)) != null)
+                //{
+                //    defs.Add(f);
+                //}
                 first = false;
             }
 
@@ -278,6 +299,27 @@ namespace DevCodeCore.Shared
             defs.entityNameLower = TextHelpers.toLowerFirst(defs.entityName);
             foreach (var f in defs.fieldDefs)
             {
+                 if (f.refDataType == -1)
+                {
+                    if (f.controlType == ControlType.Dropdown)
+                    {
+                        f.refDataType = 1;
+                    }
+                    if (f.controlType == ControlType.TypeAhead ||
+                        f.controlType == ControlType.TypeAheadSvc)
+                    {
+                        f.refDataType = 2;
+                    }
+                }
+                if (f.refDataType == 1)
+                {
+                    f.fieldName2 = TextHelpers.removeId(f.fieldName) + defs.refText;
+                    f.fieldNameLower2 = TextHelpers.toLowerFirst(f.fieldName2);
+                } else if (f.refDataType == 2)
+                {
+                    f.fieldName2 = TextHelpers.removeId(f.fieldName) + defs.refObject;
+                    f.fieldNameLower2 = TextHelpers.toLowerFirst(f.fieldName2);
+                }
                 string s = defs.forceFirstLower ? TextHelpers.toLowerFirst(f.fieldName) : f.fieldName;
                 if (s.EndsWith("ID"))
                 {
@@ -285,6 +327,11 @@ namespace DevCodeCore.Shared
                 }
                 f.fieldNameLower = s;
                 f.lookupName = makeLookupName(f.fieldNameLower);
+                if (f.operand1 == null && f.controlType == ControlType.Dropdown)
+                {
+                    f.lookupName = f.operand1 = TextHelpers.removeId(f.fieldName);
+                }
+                f.operandLower1 = f.operand1 == null ? null : TextHelpers.toLowerFirst(f.operand1);
             }
         }
 
@@ -323,7 +370,8 @@ namespace DevCodeCore.Shared
                 field.showOnForm = false;
                 field.showInTable = true;
                 field.editable = false;
-                field.doNotSave = true; ;
+                field.doNotSave = true;
+                field.descField = true;
             }
             return field;
         }

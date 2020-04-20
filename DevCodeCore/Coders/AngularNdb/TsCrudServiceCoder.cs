@@ -10,9 +10,6 @@ namespace DevCodeCore.Coders.WebClient
         public Snippet codeService(EntityModel defs)
         {
             var template = @"
-@Injectable({
-  providedIn: 'root'
-})
 export class TripService {
 
   constructor(private http: HttpClient, private globals: Globals) { }
@@ -31,11 +28,7 @@ export class TripService {
 
   onGetTrips(trips: TripModel[]) {
     for (const trip of trips) {
-      // trip.tripDate_ = new Date(trip.tripDate);
-      // trip.tripDate_ = new Date(Date.UTC(trip.tripDate_.getUTCFullYear(), trip.tripDate_.getUTCMonth(), trip.tripDate_.getUTCDate()));
-      // trip.tripDate_ = isoToNgbDate(trip.tripDate);
-      // trip.transTypeDesc = findRef()
-      trip.isNew = false;
+        trip.isNew = false;
    }
     return trips;
   }
@@ -71,10 +64,6 @@ export class TripService {
         catchError(this.handleError)
       );
   }
-
-  // handleError(s:string,model: TripModel){
-  //     alert(""Error "" + s);
-  // }
 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {

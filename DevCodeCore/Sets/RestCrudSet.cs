@@ -48,6 +48,12 @@ namespace DevCodeCore.Pages
             var coder2 = new CsModelCoder();
             list.Add(coder2.codeModel(defs));
 
+            list.Add(new TsLookupItemCoder().codeModel(defs));
+            list.Add(new LookupItemCoder().codeModel(defs));
+            list.Add(new TsRefDataModelCoder().codeModel(defs));
+            list.Add(new RefDataModelCoder().codeModel(defs));
+
+
             return list.ToArray();
         }
 
@@ -89,11 +95,9 @@ namespace DevCodeCore.Pages
             list.Add(coder5.codeHtml(defs));
             var coder2 = new LookupServiceCoder();
             list.Add(coder2.codeService(defs));
-            var coder3 = new TsLookupItemCoder();
-            list.Add(coder3.codeModel(defs));
+            list.Add(new TsLookupItemCoder().codeModel(defs));
 
-            var coder4 = new LookupItemCoder();
-            list.Add(coder4.codeModel(defs));
+            list.Add(new LookupItemCoder().codeModel(defs));
             var coder = new CsLookupCoder();
             list.Add(coder.codeController(defs));
             list.Add(coder.codeDao(defs));
@@ -114,10 +118,8 @@ namespace DevCodeCore.Pages
             var coder = new TsRefDataServiceCoder();
             list.Add(coder.codeService(defs));
 
-            var coder3 = new TsRefDataModelCoder();
-            list.Add(coder3.codeModel(defs));
-            var coder4 = new RefDataModelCoder();
-            list.Add(coder4.codeModel(defs));
+            list.Add(new TsRefDataModelCoder().codeModel(defs));
+            list.Add(new RefDataModelCoder().codeModel(defs));
 
             var coder2 = new CsRefDataCoder();
             list.Add(coder2.codeController(defs));

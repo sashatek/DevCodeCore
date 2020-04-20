@@ -22,7 +22,7 @@ namespace DevCodeCore.Coders.NetCore
             var snippet = new Snippet();
             snippet.header = "Reference Data Model, Server Side";
             snippet.language = Language.CSharp;
-            snippet.desription = "";
+            snippet.desription = "Web API Reference Data Container Model";
 
             snippet.code = replaceNames(defs, template);
 

@@ -18,7 +18,7 @@ export class RefDataModel {
             var snippet = new Snippet();
             snippet.header = "Reference Data Model, Client Side";
             snippet.language = Language.TypeScript;
-            snippet.desription = "";
+            snippet.desription = "Web API Reference Data Container Model";
 
             snippet.code = replaceNames(defs, template);
 

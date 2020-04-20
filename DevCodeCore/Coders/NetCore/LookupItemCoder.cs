@@ -21,9 +21,9 @@ namespace DevCodeCore.Coders.NetCore
 ";
 
             var snippet = new Snippet();
-            snippet.header = "Lookup Model, Server Side";
+            snippet.header = "Lookup Item Model, Server Side";
             snippet.language = Language.CSharp;
-            snippet.desription = "";
+            snippet.desription = "Web API Generic Reference Data Model";
 
             snippet.code = replaceNames(defs, template);
 

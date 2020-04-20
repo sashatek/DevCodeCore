@@ -11,9 +11,9 @@ namespace DevCodeCore.Coders.NetCore
         public Snippet codeModel(EntityModel entity)
         {
             var snippet = new Snippet();
-            snippet.header = "C#, Server side Model";
+            snippet.header = "Entity Model, Server Side";
             snippet.language = Language.CSharp;
-            snippet.desription = "Web API, View, Domain model";
+            snippet.desription = "Web API Domain model";
 
             writer.writeLine("");
             writer.writeLine($"public class {entity.entityName}Model");
@@ -22,7 +22,6 @@ namespace DevCodeCore.Coders.NetCore
             {
                 if (f.lookup)
                 {
-                    writer.writeLine($"public LookupItem {f.fieldNameLower} {{get; set;}}");
                     continue;
                 }
                 string type = "??";
@@ -52,6 +51,14 @@ namespace DevCodeCore.Coders.NetCore
                     type += "?";
                 }
                 writer.writeLine($"public {type} {f.fieldNameLower} {{get; set;}}");
+                if (f.refDataType == 1)
+                {
+                    writer.writeLine($"public string {f.fieldNameLower2} {{get; set;}}");
+                }
+                if (f.refDataType == 2)
+                {
+                    writer.writeLine($"public LookupItem {f.fieldNameLower2} {{get; set;}}");
+                }
             }
             writer.closeCurly();
             snippet.code = writer.toString();

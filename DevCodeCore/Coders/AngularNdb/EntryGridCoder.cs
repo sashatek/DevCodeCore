@@ -140,25 +140,20 @@ $$assign2$$
 <form [formGroup]=""tripForm"">
     <table class=""datatable datatableL"">
         <tr>
-            <th><a ng-click=""gc.tripSort='tripDate_';gc.tripRev=!gc.tripRev"">Trip Date</a></th>
-            <th>Airport</th>
-            <th>Trans Type</th>
-            <th>Group Name</th>
-            <th>Group Size</th>
-            <th></th>
-            <th></th>
-            <th></th>
+$$Headers$$
         </tr>
-        <tr *ngFor=""let control of tripForms.controls; let i = index"" [formGroup]=""control"">";
+        <tr *ngFor=""let tripForm of tripForms.controls; let i = index"" [formGroup]=""tripForm"">";
+
+
             var endTemplate = @"    <td>
-                <button type=""button"" class=""btn btn-primary btn-xs"" (click)=""save(i,control)""
-                    [disabled]=""!(control.dirty && control.valid)"">
+                <button type=""button"" class=""btn btn-primary btn-xs"" (click)=""save(i,tripForm)""
+                    [disabled]=""!(tripForm.dirty && tripForm.valid)"">
                     Save
                 </button>
             </td>
             <td>
                 <button type=""button"" class=""btn btn-secondary btn-xs"" (click)=""cancel(i)""
-                    [disabled]=""!control.dirty"">
+                    [disabled]=""!tripForm.dirty"">
                     Cancel
                 </button>
             </td>
@@ -169,19 +164,19 @@ $$assign2$$
                 </button>
             </td>
             <!--<td>
-                <button type=""button"" class=""btn btn-outline-success btn-xs"" (click)=""save(i,control)""
-                    [disabled]=""!(control.dirty && control.valid)"">
+                <button type=""button"" class=""btn btn-outline-success btn-xs"" (click)=""save(i,tripForm)""
+                    [disabled]=""!(tripForm.dirty && tripForm.valid)"">
                     <i class=""material-icons"" >save</i>
                 </button>
             </td>
             <td>
                 <button type=""button"" class=""btn btn-outline-danger btn-xs"" (click)=""cancel(i)""
-                    [disabled]=""!control.dirty"">
+                    [disabled]=""!tripForm.dirty"">
                     <i class=""material-icons"" >cancel</i>
                 </button>
             </td>
             <td>
-                <button type=""button"" class=""btn btn-outline-warning  btn-xs"" (click)=""delete(i, control)""
+                <button type=""button"" class=""btn btn-outline-warning  btn-xs"" (click)=""delete(i, tripForm)""
                     *ngIf=""!trip.list[i].isNew"">
                     <i class=""material-icons"" >delete</i>
                 </button>
@@ -202,15 +197,25 @@ $$assign2$$
             snippet.language = Language.HTML;
             snippet.desription = "Angular UI Component";
 
-            writer.writeLine(startTemplate);
+            var w = new CodeWriter();
+            w.nest(3);
+            foreach (var field in defs.fieldDefs)
+            {
+                w.writeLine($"<th>{field.label}</th>");
+            }
+
+            writer.writeLine(startTemplate.Replace("$$Headers$$", w.toString()));
             writer.nest(3);
             foreach (var field in defs.fieldDefs)
             {
-                writer.writeLine("<td>");
-                writer.nest();
-                writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
-                writer.unNest();
-                writer.writeLine("</td>");
+                if (field.showOnForm)
+                {
+                    writer.writeLine("<td>");
+                    writer.nest();
+                    writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
+                    writer.unNest();
+                    writer.writeLine("</td>");
+                }
             }
             writer.unNest();
             writer.writeLine(endTemplate);
