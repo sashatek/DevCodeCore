@@ -48,6 +48,10 @@ namespace DevCodeCore.Models
         public FieldModel fieldLink { get; set; }
         public ControlModel controlLink { get; set; }
         public bool descField { get; set; }
+        public int order { get; set; }
+        public int column { get; set; }
+        public bool rowStart { get; set; }
+        public bool rowEnd { get; set; }
 
         public FieldModel()
         {

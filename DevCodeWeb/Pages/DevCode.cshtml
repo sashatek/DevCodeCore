@@ -45,6 +45,13 @@
                 <pre class="prettyprint">
             @sn.code
         </pre>
+        @if (sn.showForm)
+        {
+            var s = sn.code.Replace("<app-", "<input type=\"text\" class=\"form-control\"><app-");
+    <div class="col-md-6">
+        @Html.Raw(s)
+    </div>
+        }
                 <a href="#top">Go to the top</a>
             }
         }

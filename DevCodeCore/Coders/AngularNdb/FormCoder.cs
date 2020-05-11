@@ -175,6 +175,17 @@ $$assign2$$
                 {
                     continue;
                 }
+                if (field.rowStart)
+                {
+                    writer.writeLine(@$"<div class=""row"">");
+                    writer.nest();
+                }
+                if (field.column < 12)
+                {
+                    var pos = field.controlType == ControlType.CheckBox ? "align-self-center" : "";
+                    writer.writeLine(@$"<div class=""col-{defs.media}-{field.column} {pos}"">");
+                    writer.nest();
+                }
                 if (field.controlType == ControlType.CheckBox)
                 {
                     writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower, true));
@@ -188,11 +199,22 @@ $$assign2$$
                     writer.unNest();
                     writer.writeLine("</div>");
                 }
+                if (field.column < 12)
+                {
+                    writer.unNest();
+                    writer.writeLine("</div>");
+              }
+                if (field.rowEnd)
+                {
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                }
             }
+
             writer.nest(0);
             writer.writeLine(endTemplate);
             snippet.code = replaceNames(defs, writer.toString());
-
+            snippet.showForm = true;
             return snippet;
         }
 

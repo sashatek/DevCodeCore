@@ -28,6 +28,7 @@ namespace DevCodeCore.Models
         public string theAppName { get; set; }
         public string refText { get; set; }
         public string refObject { get; set; }
+        public string media { get; set; }
 
         public EntityModel()
         {
@@ -39,6 +40,7 @@ namespace DevCodeCore.Models
             controls = new List<ControlModel>();
             refText = "Text";
             refObject = "Info";
+            media = "md";
         }
     }
 }

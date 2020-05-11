@@ -68,11 +68,15 @@ namespace DevCodeCore.Shared
                 def.editable = true;
                 def.showInTable = true;
                 def.showOnForm = true;
+                if (first && def.fieldName.ToLower().EndsWith("id"))
+                {
+                    def.showOnForm = false;
+                }
                 if (!first && def.fieldName.ToLower().EndsWith("id"))
                 {
                     def.controlType = ControlType.Dropdown;
                 }
-                 def.lookupName = makeLookupName(def.fieldName);
+                def.lookupName = makeLookupName(def.fieldName);
                 // If label specified
                 //
                 if (attrs.Length > 3)
@@ -96,7 +100,17 @@ namespace DevCodeCore.Shared
 
                                 case "service":
                                 case "s":
-                                   def.lookupName = def.operand1 = opts[1];
+                                    def.lookupName = def.operand1 = opts[1];
+                                    break;
+
+                                case "edit":
+                                    def.showOnForm = opts[1] == "1" ? true : false;
+                                    break;
+
+                                case "col":
+                                    int n;
+                                    int.TryParse(opts[1], out n);
+                                    def.column = n;
                                     break;
 
                                 case "ref":
@@ -297,6 +311,10 @@ namespace DevCodeCore.Shared
         private void prepare(EntityModel defs)
         {
             defs.entityNameLower = TextHelpers.toLowerFirst(defs.entityName);
+            var rowStart = false;
+            var rowEnd = false;
+            var rowCount = 0;
+            var first = true;
             foreach (var f in defs.fieldDefs)
             {
                  if (f.refDataType == -1)
@@ -332,6 +350,40 @@ namespace DevCodeCore.Shared
                     f.lookupName = f.operand1 = TextHelpers.removeId(f.fieldName);
                 }
                 f.operandLower1 = f.operand1 == null ? null : TextHelpers.toLowerFirst(f.operand1);
+
+                // Rowset
+                //
+                if (rowStart)
+                {
+                    if (f.column == 0)
+                    {
+                        f.column = 12 - rowCount;
+                        f.rowEnd = true;
+                        rowStart = false;
+                        rowCount = 0;
+                    }
+                    else
+                    {
+                        rowCount += f.column;
+                        if (rowCount >= 12)
+                        {
+                            f.rowEnd = true;
+                            rowStart = false;
+                            rowCount = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    if(f.column > 0 && f.column < 12)
+                    {
+                        rowStart = true;
+                        f.rowStart = true;
+                        rowCount = f.column;
+                    }
+                }
+                f.column = f.column == 0 ? 12 : f.column;
+                first = false;
             }
         }
 

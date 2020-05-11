@@ -47,8 +47,8 @@ TripDate	datetime	Unchecked ? DP
 --AirportId	int	Unchecked l:Airport c:TAS s:ArptLookup
 AirportId	int	Unchecked label:Airport control:tas comp:Airport ref:2
 TransTypeId	int	Unchecked lbl:Trans_Mode s:TransType
-GroupName	varchar(50)	Unchecked
-GroupSize	int	Unchecked
+GroupName	varchar(50)	Unchecked col:7
+GroupSize	int	Unchecked col:3
 Active	    bit	Unchecked
 Note	    varchar(256)	Checked  c:textarea
 ";

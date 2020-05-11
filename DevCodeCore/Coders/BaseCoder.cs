@@ -30,16 +30,19 @@ namespace DevCodeCore.Coders
             for (int i = 0; i < defs.fieldDefs.Count; i++)
             {
                 var field = defs.fieldDefs[i];
-                var validator = field.required ? ", Validators.required" : "";
-                var comma = i == defs.fieldDefs.Count - 1 ? "" : ", ";
-                if (field.refDataType == 2)
+                if (field.showOnForm)
                 {
-                    writer.writeLine($"{field.fieldNameLower2}: [model.{field.fieldNameLower2}{validator}]{comma}");
-                } 
-                else
-                // if (field.editable)
-                {
-                    writer.writeLine($"{field.fieldNameLower}: [model.{field.fieldNameLower}{validator}]{comma}");
+                    var validator = field.required ? ", Validators.required" : "";
+                    var comma = i == defs.fieldDefs.Count - 1 ? "" : ", ";
+                    if (field.refDataType == 2)
+                    {
+                        writer.writeLine($"{field.fieldNameLower2}: [model.{field.fieldNameLower2}{validator}]{comma}");
+                    }
+                    else
+                    // if (field.editable)
+                    {
+                        writer.writeLine($"{field.fieldNameLower}: [model.{field.fieldNameLower}{validator}]{comma}");
+                    }
                 }
             }
             return writer.toString();
@@ -50,17 +53,20 @@ namespace DevCodeCore.Coders
             writer.nest(nest);
             foreach (var field in defs.fieldDefs)
             {
-                if (field.refDataType == 2)
+                if (field.showOnForm)
                 {
-                    writer.writeLine($"model.{field.fieldNameLower2} = form.controls.{field.fieldNameLower2}.value;");
-                }
-                else
-                {
-                    writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
-                    if (field.controlType == ControlType.Dropdown && field.refDataType == 1)
+                    if (field.refDataType == 2)
                     {
-                        //this.model.transTypeDesc = this.refDataService.getRefDataById(this.refDataService.refData.transTypes, this.model.transTypeId).text;
-                        writer.writeLine($"model.{field.fieldNameLower2} = this.refDataService.getRefDataById(this.refDataService.refData.{field.operandLower1}s, model.{field.fieldNameLower}).text;");
+                        writer.writeLine($"model.{field.fieldNameLower2} = form.controls.{field.fieldNameLower2}.value;");
+                    }
+                    else
+                    {
+                        writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
+                        if (field.controlType == ControlType.Dropdown && field.refDataType == 1)
+                        {
+                            //this.model.transTypeDesc = this.refDataService.getRefDataById(this.refDataService.refData.transTypes, this.model.transTypeId).text;
+                            writer.writeLine($"model.{field.fieldNameLower2} = this.refDataService.getRefDataById(this.refDataService.refData.{field.operandLower1}s, model.{field.fieldNameLower}).text;");
+                        }
                     }
                 }
             }
@@ -92,7 +98,7 @@ namespace DevCodeCore.Coders
                     html = $@"<input id=""{name}"" type=""text"" class=""form-control"" formControlName=""{name}"" {required}>";
                     break;
                 case ControlType.TextArea:
-                    html = $@"<textarea id=""{name}"" type = ""text"" class=""form-control"" formControlName=""{name}"" rows=""10"" {required}></textarea>";
+                    html = $@"<textarea id=""{name}"" type = ""text"" class=""form-control"" formControlName=""{name}"" rows=""3"" {required}></textarea>";
                     break;
                 case ControlType.Date:
                     break;
