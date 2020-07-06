@@ -24,41 +24,41 @@ namespace DevCodeCore.Coders.NetCore
         [Route(""GetAll"")]
         public async Task<IActionResult> GetAll()
         {
-            ReferenceData referenceData = null;
+            ReferenceData referenceData;
             try
             {
                 var dao = new ReferenceDataDao(_db);
-                referenceData = dao.getAll();
-                return Ok(referenceData);
+                referenceData = await dao.getAllAsync();
             }
             catch (Exception e)
             {
                 return BadRequest(new { message = ErrorUtils.dbErrorMessage(""Can't get reference dataset"", e)});
             }
+            return Ok(referenceData);
         }
-    }
-";
+    }";
+
         string daoTpl = @"
     public class ReferenceDataDao
     {
-        DevCodeContext _db;
+        readonly DevCodeContext _db;
         public ReferenceDataDao(DevCodeContext db)
         {
             _db = db;
         }
 
 
-        public ReferenceData getAll()
+        public async Task<ReferenceData> getAllAsync()
         {
             var model = new ReferenceData();
 
-            model.transTypes = (from d in _db.TransType
+            model.transTypes = await (from d in _db.TransType
                                     //orderby d.IsActive, d.LocationDesc
                                 select new LookupItem()
                                 {
                                     id = d.TransTypeId,
                                     text = d.Description
-                                }).ToArray();
+                                }).ToArrayAsync();
 
             // From enum
             //
@@ -72,8 +72,8 @@ namespace DevCodeCore.Coders.NetCore
 
             return model;
         }
-    }
-";
+    }";
+
         public Snippet codeController(EntityModel defs)
         {
             var snippet = new Snippet();

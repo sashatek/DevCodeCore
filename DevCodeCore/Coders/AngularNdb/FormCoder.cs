@@ -13,6 +13,7 @@ namespace DevCodeCore.Coders.AngularNdb
             List<Snippet> snippets = new List<Snippet>();
             snippets.Add(codeController(defs));
             snippets.Add(codeHtml(defs));
+            snippets.Add(codeHtmlHorizontal(defs));
             return snippets.ToArray();
         }
         public Snippet codeController(EntityModel defs)
@@ -73,11 +74,14 @@ export class TripFormComponent implements OnInit {
     this.initForm(this.model);
     // this.tripForm.reset(model);
   }
+
   private initForm(model:TripModel) {
     this.tripForm = this.fb.group({
 $$assign1$$
     });
   }
+
+    get f() { return this.tripForm.controls; }
 
   saveTrip() {
     // this.model = {...this.model, ...this.tripForm.value};
@@ -111,10 +115,6 @@ $$assign2$$
     this.delete.emit(this.model);
   }
 
-  arptSelect(item: ILookupItem) {
-    this.arpt = item;
-  }
-
   onTransTypeChange(event, model: TripModel) {
     model.transTypeDesc = event.target.options[event.target.options.selectedIndex].text;
   }
@@ -136,13 +136,11 @@ $$assign2$$
             return snippet;
         }
 
-        public Snippet codeHtml(EntityModel defs)
-        {
-            string startTemplate = @"
+        string startFormTemplate = @"
 <form [formGroup]=""tripForm"" novalidate>
     <div>";
 
-            string endTemplate = @"    </div>
+        string endFormTemplate = @"    </div>
     <div class=""pull-left"" *ngIf=""showButtons"">
         <button type=""button"" class=""btn btn-primary mr-2"" (click)=""saveTrip()""
             [disabled]=""!(tripForm.dirty && tripForm.valid)"">
@@ -157,6 +155,9 @@ $$assign2$$
 </form>";
 
 
+        public Snippet codeHtml(EntityModel defs)
+        {
+ 
             //            var endtemplate = @"
 
             //";
@@ -167,7 +168,7 @@ $$assign2$$
             snippet.language = Language.HTML;
             snippet.desription = "Angular UI Component";
 
-            writer.writeLine(startTemplate);
+            writer.writeLine(startFormTemplate);
             writer.nest(2);
             foreach (var field in defs.fieldDefs)
             {
@@ -192,10 +193,21 @@ $$assign2$$
                 }
                 else
                 {
+                    string name = field.controlLink == null ? field.fieldNameLower : field.fieldNameLower2;
+
                     writer.writeLine(@$"<div class=""form-group"">");
                     writer.nest();
-                    writer.writeLine(@$"<label for=""{field.fieldNameLower}"" class=""control-label"">{field.label}</label>");
+                    writer.writeLine(@$"<label for=""{name}"" class=""control-label"">{field.label}</label>");
                     writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
+                    if (field.required)
+                    {
+                        writer.writeLine($@"<div *ngIf=""f.{name}.invalid && (f.{name}.dirty || f.{name}.touched)""");
+                        writer.writeLine($@"    class=""form-text text-danger"">");
+                        writer.nest();
+                        writer.writeLine($@"<div *ngIf=""f.{name}.errors.required"">{field.label} is required.</div>");
+                        writer.unNest();
+                        writer.writeLine("</div>");
+                    }
                     writer.unNest();
                     writer.writeLine("</div>");
                 }
@@ -212,12 +224,95 @@ $$assign2$$
             }
 
             writer.nest(0);
-            writer.writeLine(endTemplate);
+            writer.writeLine(endFormTemplate);
             snippet.code = replaceNames(defs, writer.toString());
             snippet.showForm = true;
             return snippet;
         }
+        public Snippet codeHtmlHorizontal(EntityModel defs)
+        {
 
+            //            var endtemplate = @"
+
+            //";
+            // var media = defs.media + "-";
+            // var media = "sm-";
+             var media = "";
+            var writer = new CodeWriter();
+            var snippet = new Snippet();
+            snippet.header = "Horizontal Form Content and Layout";
+            snippet.language = Language.HTML;
+            snippet.desription = "Angular UI Component";
+
+            writer.writeLine(startFormTemplate);
+            writer.nest(2);
+            foreach (var field in defs.fieldDefs)
+            {
+                if (!field.showOnForm)
+                {
+                    continue;
+                }
+                if (field.rowStart)
+                {
+                    writer.writeLine(@$"<div class=""row"">");
+                    writer.nest();
+                }
+                if (field.column < 12)
+                {
+                    var pos = field.controlType == ControlType.CheckBox ? "align-self-center" : "";
+                    writer.writeLine(@$"<div class=""col-{media}{field.column} {pos}"">");
+                    writer.nest();
+                }
+                if (field.controlType == ControlType.CheckBox)
+                {
+                    writer.writeLine(@$"<div class=""col-{media}{12 - defs.hform} offset-{media}{defs.hform}"">");
+                    writer.nest();
+                    writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower, true));
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                }
+                else
+                {
+                    string name = field.controlLink == null ? field.fieldNameLower : field.fieldNameLower2;
+
+                    writer.writeLine(@$"<div class=""form-group row"">");
+                    writer.nest();
+                    writer.writeLine(@$"<label for=""{name}"" class=""col-{media}{defs.hform} col-form-label text-right"">{field.label}</label>");
+                    writer.writeLine(@$"<div class=""col-{media}{12- defs.hform}"">");
+                    writer.nest();
+                    writer.writeMultiLine(codeHtmlControl(field, defs.entityNameLower));
+                    if (field.required)
+                    {
+                        writer.writeLine($@"<div *ngIf=""f.{name}.invalid && (f.{name}.dirty || f.{name}.touched)""");
+                        writer.writeLine($@"    class=""form-text text-danger"">");
+                        writer.nest();
+                        writer.writeLine($@"<div *ngIf=""f.{name}.errors.required"">{field.label} is required.</div>");
+                        writer.unNest();
+                        writer.writeLine("</div>");
+                    }
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                }
+                if (field.column < 12)
+                {
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                }
+                if (field.rowEnd)
+                {
+                    writer.unNest();
+                    writer.writeLine("</div>");
+                }
+            }
+
+            writer.nest(0);
+            writer.writeLine(endFormTemplate);
+            snippet.code = replaceNames(defs, writer.toString());
+            snippet.showForm = true;
+            return snippet;
+        }
         public Snippet codeCss(EntityModel defs)
         {
             var template = @"";

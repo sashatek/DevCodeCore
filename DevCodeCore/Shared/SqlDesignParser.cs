@@ -46,6 +46,14 @@ namespace DevCodeCore.Shared
                                 case "ref":
                                     entityDef.refText = opts[1];
                                     break;
+                                case "media":
+                                    entityDef.media = opts[1];
+                                    break;
+                                case "hform":
+                                    int n;
+                                    int.TryParse(opts[1], out n);
+                                    entityDef.hform = n;
+                                    break;
                             }
                         }
 
@@ -317,7 +325,7 @@ namespace DevCodeCore.Shared
             var first = true;
             foreach (var f in defs.fieldDefs)
             {
-                 if (f.refDataType == -1)
+                if (f.refDataType == -1)
                 {
                     if (f.controlType == ControlType.Dropdown)
                     {
@@ -329,6 +337,14 @@ namespace DevCodeCore.Shared
                         f.refDataType = 2;
                     }
                 }
+                string s = defs.forceFirstLower ? TextHelpers.toLowerFirst(f.fieldName) : f.fieldName;
+                if (s.EndsWith("ID"))
+                {
+                    s = s.Remove(s.Length - 1, 1) + "d";
+                }
+                f.fieldNameLower = s;
+                f.refObjectName = TextHelpers.removeId(f.fieldNameLower) + defs.refObject;
+                f.descFieldName = TextHelpers.removeId(f.fieldNameLower) + defs.refText;
                 if (f.refDataType == 1)
                 {
                     f.fieldName2 = TextHelpers.removeId(f.fieldName) + defs.refText;
@@ -338,12 +354,6 @@ namespace DevCodeCore.Shared
                     f.fieldName2 = TextHelpers.removeId(f.fieldName) + defs.refObject;
                     f.fieldNameLower2 = TextHelpers.toLowerFirst(f.fieldName2);
                 }
-                string s = defs.forceFirstLower ? TextHelpers.toLowerFirst(f.fieldName) : f.fieldName;
-                if (s.EndsWith("ID"))
-                {
-                    s = s.Remove(s.Length - 1, 1) + "d";
-                }
-                f.fieldNameLower = s;
                 f.lookupName = makeLookupName(f.fieldNameLower);
                 if (f.operand1 == null && f.controlType == ControlType.Dropdown)
                 {
@@ -384,6 +394,11 @@ namespace DevCodeCore.Shared
                 }
                 f.column = f.column == 0 ? 12 : f.column;
                 first = false;
+
+                if (f.controlType == ControlType.CheckBox)
+                {
+                    f.required = false;
+                }
             }
         }
 

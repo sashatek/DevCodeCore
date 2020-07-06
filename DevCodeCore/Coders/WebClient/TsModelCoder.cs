@@ -43,14 +43,15 @@ namespace DevCodeCore.Coders.WebClient
                         type = "string";
                         break;
                     case FieldType.Bool:
-                        type = "boolean";
+                        type = f.isNullable ? "boolean" : "false";
                         break;
                     case FieldType.DateTime:
                         type = "Date";
                         break;
                 }
                 var nullable = f.isNullable ? " | null" : "";
-                writer.writeLine($"{f.fieldNameLower}: {type}{nullable};");
+                var comment = f.refDataType == 2 ? "// " : "";
+                writer.writeLine($"{comment}{f.fieldNameLower}: {type}{nullable};");
                 if (f.refDataType == 1)
                 {
                     writer.writeLine($"{f.fieldNameLower2}: string{nullable};");

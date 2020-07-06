@@ -50,7 +50,8 @@ namespace DevCodeCore.Coders.NetCore
                 {
                     type += "?";
                 }
-                writer.writeLine($"public {type} {f.fieldNameLower} {{get; set;}}");
+                var comment = f.refDataType == 2 ? "// " : "";
+                writer.writeLine($"{comment}public {type} {f.fieldNameLower} {{get; set;}}");
                 if (f.refDataType == 1)
                 {
                     writer.writeLine($"public string {f.fieldNameLower2} {{get; set;}}");

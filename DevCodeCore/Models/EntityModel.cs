@@ -29,6 +29,7 @@ namespace DevCodeCore.Models
         public string refText { get; set; }
         public string refObject { get; set; }
         public string media { get; set; }
+        public int hform { get; set; }
 
         public EntityModel()
         {
@@ -41,6 +42,7 @@ namespace DevCodeCore.Models
             refText = "Text";
             refObject = "Info";
             media = "md";
+            hform = 4;
         }
     }
 }

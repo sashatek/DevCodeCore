@@ -41,14 +41,14 @@ namespace DevCodeCore.DAL
             model.defTpl.entityName = "N/A";
 
             model.defTpl.srcText = @"-- Remove the code below and copy/paste yours
-* e:Trip db:DevCode r:Desc
+* e:Trip db:DevCode r:Desc hform:3
 TripId	int	Unchecked
 TripDate	datetime	Unchecked ? DP
 --AirportId	int	Unchecked l:Airport c:TAS s:ArptLookup
-AirportId	int	Unchecked label:Airport control:tas comp:Airport ref:2
+AirportId	int	Unchecked label:Airport control:tas comp:Airport
 TransTypeId	int	Unchecked lbl:Trans_Mode s:TransType
-GroupName	varchar(50)	Unchecked col:7
-GroupSize	int	Unchecked col:3
+GroupName	varchar(50)	Unchecked col:8
+GroupSize	int	Unchecked 
 Active	    bit	Unchecked
 Note	    varchar(256)	Checked  c:textarea
 ";

@@ -52,6 +52,8 @@ namespace DevCodeCore.Models
         public int column { get; set; }
         public bool rowStart { get; set; }
         public bool rowEnd { get; set; }
+        public string descFieldName { get; set; }
+        public string refObjectName { get; set; }
 
         public FieldModel()
         {

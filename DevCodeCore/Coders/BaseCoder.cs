@@ -38,6 +38,13 @@ namespace DevCodeCore.Coders
                     {
                         writer.writeLine($"{field.fieldNameLower2}: [model.{field.fieldNameLower2}{validator}]{comma}");
                     }
+                    else if ((field.controlType == ControlType.TypeAheadSvc ||
+                                    field.controlType == ControlType.TypeAhead) &&
+                                    field.refDataType == 1)
+                    {
+                        var value = $"{{id:{field.fieldNameLower}, text:{field.descFieldName}}}";
+                        writer.writeLine($"{field.refObjectName}: [model.{value}{validator}]{comma}");
+                    }
                     else
                     // if (field.editable)
                     {
@@ -61,11 +68,28 @@ namespace DevCodeCore.Coders
                     }
                     else
                     {
-                        writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
+                        if ((field.controlType == ControlType.TypeAhead || field.controlType == ControlType.TypeAheadSvc)
+                             && field.refDataType == 1)
+                        {
+                            //this.model.transTypeDesc = this.refDataService.getRefDataById(this.refDataService.refData.transTypes, this.model.transTypeId).text;
+                            writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.refObjectName}.id;");
+                            writer.writeLine($"model.{field.fieldNameLower2} = this.{field.refObjectName}.text");
+                        }
+                        else
+                        {
+                            writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.fieldNameLower}.value;");
+                        }
                         if (field.controlType == ControlType.Dropdown && field.refDataType == 1)
                         {
                             //this.model.transTypeDesc = this.refDataService.getRefDataById(this.refDataService.refData.transTypes, this.model.transTypeId).text;
                             writer.writeLine($"model.{field.fieldNameLower2} = this.refDataService.getRefDataById(this.refDataService.refData.{field.operandLower1}s, model.{field.fieldNameLower}).text;");
+                        }
+                        if ((field.controlType == ControlType.TypeAhead || field.controlType == ControlType.TypeAheadSvc)
+                            && field.refDataType == 1)
+                        {
+                            //this.model.transTypeDesc = this.refDataService.getRefDataById(this.refDataService.refData.transTypes, this.model.transTypeId).text;
+                            writer.writeLine($"model.{field.fieldNameLower} = form.controls.{field.refObjectName}.id;");
+                            writer.writeLine($"model.{field.fieldNameLower2} = this.{field.refObjectName}.text");
                         }
                     }
                 }
@@ -80,7 +104,7 @@ namespace DevCodeCore.Coders
             var name2 = field.fieldNameLower2;
             var service = field.operand1;
             var serviceLower = field.operandLower1;
-            var required = field.isNullable ? "" : "required";
+            var required = field.isNullable ? "" : "";
 
             if (field.controlLink != null)
             {

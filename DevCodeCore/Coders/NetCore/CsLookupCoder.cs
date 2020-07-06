@@ -19,29 +19,29 @@ namespace DevCodeCore.Coders.NetCore
             _db = context;
         }
 
-        // /api/Lookup/Airport/aa
+        // /api/Lookup/Iata/aa
         //[HttpGet]
         // [EnableCors(""MyPolicy"")]
-        [Route(""Airport/{term}"")]
-        public LookupItem[] Airport(string term)
+        [Route(""Iata/{term}"")]
+        public async Task<LookupItem[]> Iata(string term)
         {
             var lookupDao = new LookupDao(_db);
-            return lookupDao.lookupAirport(term);
+            return await lookupDao.airportsByIataAsync(term);
         }
-    }
-";
+    }";
+
         string daoTpl = @"
     public class LookupDao
     {
-        DevCodeContext _db;
+        readonly DevCodeContext _db;
         public LookupDao(DevCodeContext db)
         {
             _db = db;
         }
 
-        public LookupItem[] lookupAirport(string term)
+        public async Task<LookupItem[]> airportsByIataAsync(string term)
         {
-            return _db.Airport
+            return await _db.Airport
                  .Where(c => c.IataIdent.StartsWith(term))
                  .OrderBy(c => c.IataIdent)
                  .Take(15)
@@ -49,12 +49,12 @@ namespace DevCodeCore.Coders.NetCore
                  {
                      id = (int)c.AirportId,
                      text = c.IataIdent,
-                     text2 = c.Name.Trim()
+                     text2 = c.AirportName.Trim()
                  })
-                 .ToArray();
+                 .ToArrayAsync();
         }
-    }
-";
+    }";
+
         public Snippet codeController(EntityModel defs)
         {
             var snippet = new Snippet();

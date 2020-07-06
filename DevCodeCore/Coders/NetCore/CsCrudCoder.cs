@@ -12,7 +12,7 @@ namespace DevCodeCore.Coders.NetCore
             @"
     [Route(""api/[controller]"")]
     [ApiController]
-    //[EnableCors(""CorsPolicy"")]
+    [EnableCors(""CorsPolicy"")]
     public class TripController : ControllerBase
     {
         private readonly DevCodeContext _db;
@@ -24,11 +24,11 @@ namespace DevCodeCore.Coders.NetCore
         // GET: api/TripApi
         [HttpGet]
         [Route(""GetAll"")]
-        public IEnumerable<TripModel> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var dao = new TripDao(_db);
-            var models = dao.getTrips();
-            return models;
+            var models = await dao.getTripsAsync();
+            return Ok(models);
         }
 
         // GET: api/TripApi/5
@@ -40,12 +40,12 @@ namespace DevCodeCore.Coders.NetCore
                 return BadRequest(ModelState);
             }
 
-            TripModel model = null;
+            TripModel model;
             try
             {
                 var dao = new TripDao(_db);
-                model = dao.getTrip(id);
-             }
+                model = await  dao.getTripAsync(id);
+            }
             catch (Exception e)
             {
                 return BadRequest(new { message = ErrorUtils.dbErrorMessage($""Can't get Trip with id={id}"", e) });
@@ -79,7 +79,7 @@ namespace DevCodeCore.Coders.NetCore
             try
             {
                 var dao = new TripDao(_db);
-                dao.saveTrip(tripModel);
+                tripModel = await dao.saveTripAsync(tripModel);
             }
             catch (Exception e)
             {
@@ -90,7 +90,7 @@ namespace DevCodeCore.Coders.NetCore
                 return BadRequest(new { message = ErrorUtils.dbErrorMessage($""Can't save Trip with id={id}"", e) });
             }
 
-            return NoContent();
+            return NoContent(); // Or Ok(tripModel);
         }
 
         // POST: api/TripApi
@@ -106,11 +106,11 @@ namespace DevCodeCore.Coders.NetCore
             {
                 var dao = new TripDao(_db);
                 //tripModel.transTypeId = 100;
-                tripModel = dao.addTrip(tripModel);
+                tripModel = await dao.addTripAsync(tripModel);
             }
             catch (Exception e)
             {
-              return BadRequest(new { message = ErrorUtils.dbErrorMessage($""Can't insert (add) Trip"", e) });
+                return BadRequest(new { message = ErrorUtils.dbErrorMessage($""Can't insert (add) Trip"", e) });
             }
 
             return CreatedAtAction(""GetTrip"", new { id = tripModel.tripId }, tripModel);
@@ -123,7 +123,7 @@ namespace DevCodeCore.Coders.NetCore
             try
             {
                 var dao = new TripDao(_db);
-                if (dao.deleteTrip(id) == -1)
+                if (await dao.deleteTripAsync(id) == -1)
                 {
                     return NotFound();
                 }
@@ -143,15 +143,15 @@ namespace DevCodeCore.Coders.NetCore
     }";
 
         string daoTemplate = @"
-   public class TripDao
+    public class TripDao
     {
-        DevCodeContext _db;
+        readonly DevCodeContext _db;
         public TripDao(DevCodeContext db)
         {
             _db = db;
         }
 
-        public TripModel[] getTrips()
+        public async Task<TripModel[]> getTripsAsync()
         {
             var tripModels = _db.Trip
                 .Include(t => t.Airport)
@@ -160,40 +160,23 @@ namespace DevCodeCore.Coders.NetCore
                 {
 $$assign$$
                 });
-            return tripModels.ToArray();
+            return await tripModels.ToArrayAsync();
         }
 
-        public TripModel getTrip(int tripId)
+        public async Task<TripModel> getTripAsync(int tripId)
         {
             var tripModel = _db.Trip
                 .Include(t => t.Airport)
                 .Include(t => t.TransType)
-                .Where(t=>t.TripId == tripId)
+                .Where(t => t.TripId == tripId)
                 .Select(e => new TripModel
                 {
-$$assign$$
+$$assign$$				
                 })
-                .SingleOrDefault();
-            return tripModel;
-        }
-        public TripModel addTrip(TripModel model)
-        {
-            var trip = new Trip();
-            updateFromModel(trip, model);
-            _db.Trip.Add(trip);
-            _db.SaveChanges();
-            model.tripId = trip.TripId;
-            return model;
-        }
-        public int saveTrip(TripModel model)
-        {
-            var trip = _db.Trip.Find(model.tripId);
-            updateFromModel(trip, model);
-            _db.Entry(trip).State = EntityState.Modified;
-            return _db.SaveChanges();
-        }
- 
+                .SingleOrDefaultAsync();
 
+            return await tripModel;
+        }
         public async Task<TripModel> addTripAsync(TripModel model)
         {
             var trip = new Trip();
@@ -201,10 +184,18 @@ $$assign$$
             _db.Trip.Add(trip);
             await _db.SaveChangesAsync();
             model.tripId = trip.TripId;
-            return model ;
+            return model;
+        }
+        public async Task<TripModel> saveTripAsync(TripModel model)
+        {
+            var trip = _db.Trip.Find(model.tripId);
+            updateFromModel(trip, model);
+            _db.Entry(trip).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return model;
         }
 
-        public int deleteTrip(int id)
+        public async Task<int> deleteTripAsync(int id)
         {
             var trip = _db.Trip.Find(id);
             if (trip == null)
@@ -213,19 +204,18 @@ $$assign$$
             }
 
             _db.Trip.Remove(trip);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return 0;
         }
- 
+
         public void updateFromModel(Trip trip, TripModel model)
         {
             if (trip != null)
             {
-$$assign2$$
+$$assign2$$			
             }
         }
-    }
-";
+    }";
         public Snippet codeController(EntityModel defs)
         {
             var snippet = new Snippet();
