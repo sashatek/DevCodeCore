@@ -22,11 +22,11 @@ namespace DevCodeCore.Coders.WebClient
             writer.nest();
             foreach (var f in defs.fieldDefs)
             {
-                if (f.lookup)
-                {
-                    writer.writeLine($"{f.fieldNameLower}: ILookupItem;");
-                    continue;
-                }
+                //if (f.lookup)
+                //{
+                //    writer.writeLine($"{f.fieldNameLower}: ILookupItem;");
+                //    continue;
+                //}
                 string type = "any";
                 switch (f.fieldType)
                 {
@@ -43,7 +43,7 @@ namespace DevCodeCore.Coders.WebClient
                         type = "string";
                         break;
                     case FieldType.Bool:
-                        type = f.isNullable ? "boolean" : "false";
+                        type = "boolean";
                         break;
                     case FieldType.DateTime:
                         type = "Date";
@@ -51,14 +51,21 @@ namespace DevCodeCore.Coders.WebClient
                 }
                 var nullable = f.isNullable ? " | null" : "";
                 var comment = f.refDataType == 2 ? "// " : "";
-                writer.writeLine($"{comment}{f.fieldNameLower}: {type}{nullable};");
+                if (f.fieldType == FieldType.Bool && !f.isNullable)
+                {
+                    writer.writeLine($"{comment}{f.fieldNameLower} = false;");
+                }
+                else
+                {
+                    writer.writeLine($"{comment}{f.fieldNameLower}: {type}{nullable};");
+                }
                 if (f.refDataType == 1)
                 {
                     writer.writeLine($"{f.fieldNameLower2}: string{nullable};");
                 }
                 if (f.refDataType == 2)
                 {
-                    writer.writeLine($"{f.fieldNameLower2}: LookupItem;");
+                    writer.writeLine($"{f.fieldNameLower2}: ILookupItem;");
                 }
 
             }

@@ -11,7 +11,9 @@ namespace DevCodeCore.DAL
         {
             var model = new InitModel();
 
-            model.sqlDesignText = @"-- Remove the code below and copy/paste yours
+            // this guy is not in use
+            //
+            model.sqlDesignText = @"-- Remove the sample code below and copy/paste yours
 * e:Trip d:DevCode hform:2
 TripId	int	Unchecked
 TripDate	datetime	Unchecked ? DP

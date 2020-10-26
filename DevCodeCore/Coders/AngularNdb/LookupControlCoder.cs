@@ -22,7 +22,7 @@ export class ArptLookupComponent implements OnInit {
   @Input() parentForm: FormGroup;
   @Input() formFieldName: string;
 
-  @Output() onArptSelect = new EventEmitter<ILookupItem>();
+  @Output() airportSelect = new EventEmitter<ILookupItem>();
 
   constructor(private arptService: ArptLookupService) { }
 
@@ -55,7 +55,7 @@ export class ArptLookupComponent implements OnInit {
     }
 
     select(event: NgbTypeaheadSelectItemEvent) {
-      this.onArptSelect.emit(event.item as ILookupItem);
+      this.airportSelect.emit(event.item as ILookupItem);
     }
 }
 

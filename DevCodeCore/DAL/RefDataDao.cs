@@ -40,8 +40,8 @@ namespace DevCodeCore.DAL
             model.defTpl = new EntityModel();
             model.defTpl.entityName = "N/A";
 
-            model.defTpl.srcText = @"-- Remove the code below and copy/paste yours
-* e:Trip db:DevCode r:Desc hform:3
+            model.defTpl.srcText = @"-- Remove the sample entity defenition and paste yours
+* e:Trip context:DevCode r:Desc hform:3
 TripId	int	Unchecked
 TripDate	datetime	Unchecked ? DP
 --AirportId	int	Unchecked l:Airport c:TAS s:ArptLookup

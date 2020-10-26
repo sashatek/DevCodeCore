@@ -10,16 +10,29 @@ namespace DevCodeCore.Shared
     {
         public void parse(string text, EntityModel entityDef)
         {
-            string[] line = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            
+            //if (lines.Length > 0)
+            //{
+            //    var line = lines[0];
+            //    var tokens = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
+            //    if(tokens.Length > 30)
+            //    {
+            //        var setParser = new ResultSetDescribeParser();
+            //        text = setParser.parseToSqlDesgn(text);
+            //        entityDef.srcText = text;
+            //    }
+            //}
             var defs = new List<FieldModel>();
             bool first = true;
 
-            foreach (var field in line)
+            foreach (var field in lines)
             {
-                if (field.StartsWith("--"))
+                if (field.StartsWith("--") || field.StartsWith("["))
                 {
                     continue;
                 }
+  
                 string[] attrs = field.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
                 if (attrs[0] == "*")
                 {
@@ -38,8 +51,7 @@ namespace DevCodeCore.Shared
                                 case "upper":
                                     entityDef.forceFirstLower = !(opts[1] == "1" || opts[1] == "true") ? true : false;
                                     break;
-                                case "d":
-                                case "db":
+                                case "context":
                                     entityDef.dbContext = opts[1];
                                     break;
                                 case "r":
@@ -61,13 +73,17 @@ namespace DevCodeCore.Shared
                     continue;
                 }
 
+                if (attrs.Length < 3)
+                {
+                    continue;
+                }
                 var def = new FieldModel();
                 def.fieldName = attrs[0];
                 string[] types = attrs[1].Split(':');
                 def.dbFieldType = types.Length > 1 ? types[1] : types[0];
                 def.fieldType = dbToFieldType(def.dbFieldType);
                 def.controlType = formControlType(def.fieldType);
-                def.isNullable = attrs[2] == "Checked";
+                def.isNullable = attrs[2] == "Checked" || attrs[2] == "Y" || attrs[2] == "1" ? true : false;
                 def.required = !def.isNullable;
 
                 string label = TextHelpers.splitToWords(TextHelpers.removeId(def.fieldName));

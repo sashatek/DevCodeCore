@@ -43,6 +43,8 @@ namespace DevCodeCore.Models
             refObject = "Info";
             media = "md";
             hform = 4;
+            entityName = "EntityNoName";
+            dbContext = "_db";
         }
     }
 }

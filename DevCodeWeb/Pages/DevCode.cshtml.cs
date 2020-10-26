@@ -41,6 +41,7 @@ namespace DevCodeWeb
             defs.control = defs.controls.Count > 0 ? defs.controls[controlId] : null;
             var set = new RestCrudSet();
             snippets = set.getCode(genMode, defs);
+            scrText = "";
         }
     }
 }

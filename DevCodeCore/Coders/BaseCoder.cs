@@ -17,11 +17,18 @@ namespace DevCodeCore.Coders
         }
         protected string replaceNames(EntityModel defs, string s)
         {
-            return s.Replace("Trip", defs.entityName)
-                .Replace("trip", defs.entityNameLower)
-                .Replace("DevCode", defs.dbContext)
-                .Replace("Airport", defs.control.controlName)
-                .Replace("airport", defs.control.controlNameLower); 
+            s = s.Replace("Trip", defs.entityName)
+            .Replace("trip", defs.entityNameLower)
+            .Replace("DevCode", defs.dbContext);
+
+            if (defs.control != null && defs.control.controlName != null)
+            {
+                s = s.Replace("Airport", defs.control.controlName)
+                .Replace("airport", defs.control.controlNameLower)
+                .Replace("Arpt", defs.control.controlName)
+                .Replace("arpt", defs.control.controlNameLower);
+            }
+            return s;
         }
         public string makeFormGroup(EntityModel defs, int nest)
         {
@@ -32,7 +39,7 @@ namespace DevCodeCore.Coders
                 var field = defs.fieldDefs[i];
                 if (field.showOnForm)
                 {
-                    var validator = field.required ? ", Validators.required" : "";
+                    var validator = field.required && field.controlType != ControlType.CheckBox ? ", Validators.required" : "";
                     var comma = i == defs.fieldDefs.Count - 1 ? "" : ", ";
                     if (field.refDataType == 2)
                     {
@@ -109,8 +116,8 @@ namespace DevCodeCore.Coders
             if (field.controlLink != null)
             {
                 var tagName = field.controlLink.tagName;
-                var controlName = field.controlLink.controlName;
-                html = $@"<{tagName} id=""{name2}"" (on{controlName}Select)=""arptSelect($event)"" 
+                var controlName = TextHelpers.toLowerFirst(field.controlLink.controlName);
+                html = $@"<{tagName} id=""{name2}"" ({controlName}Select)=""arptSelect($event)"" 
     [parentForm]=""{entityName}Form"" [formFieldName]=""'{name2}'"">
 </{tagName}>";
                 return html;

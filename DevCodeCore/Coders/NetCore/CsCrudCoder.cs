@@ -31,7 +31,7 @@ namespace DevCodeCore.Coders.NetCore
             return Ok(models);
         }
 
-        // GET: api/TripApi/5
+        // GET: api/Trip/5
         [HttpGet(""{id}"")]
         public async Task<IActionResult> GetTrip([FromRoute] int id)
         {
@@ -58,7 +58,7 @@ namespace DevCodeCore.Coders.NetCore
             return Ok(model);
         }
 
-        // PUT: api/TripApi/5
+        // PUT: api/Trip/5
         [HttpPut(""{id}"")]
         public async Task<IActionResult> PutTrip([FromRoute] int id, [FromBody] TripModel tripModel)
         {
@@ -230,7 +230,7 @@ $$assign2$$
         public Snippet codeDao(EntityModel defs)
         {
             var snippet = new Snippet();
-            snippet.header = "CRUD WebApi Controller";
+            snippet.header = "CRUD Data Access Object";
             snippet.language = Language.CSharp;
             snippet.desription = "Implemets REST CRUD Controller";
 
@@ -257,8 +257,8 @@ $$assign2$$
                     writer.writeLine($"// {field.fieldNameLower} = e.{field.fieldName}{comma}");
                     writer.writeLine($"{field.fieldNameLower2} = new LookupItem()");
                     writer.openCurly();
-                    writer.writeLine($"id = e.{field.fieldNameLower},");
-                    writer.writeLine(@$"text = """"{comma} // Add your text/desc field name like e.Airport.IataIdent{comma}");
+                    writer.writeLine($"id = e.{field.fieldName},");
+                    writer.writeLine(@$"text = """"{comma} // Add your text/desc field name like e.Airport.AirportName{comma}");
                     writer.unNest();
                     writer.writeLine($"}}{comma}");
                 }
@@ -285,7 +285,7 @@ $$assign2$$
                 if (field.refDataType == 2)
                 {
                     writer.writeLine($"// {entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower};");
-                    writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower2}.id; // Select one");
+                    writer.writeLine($"{entity.entityNameLower}.{field.fieldName} = model.{field.fieldNameLower2}.id; // Select one Id field. this, or the above");
                 }
                 else
                 {

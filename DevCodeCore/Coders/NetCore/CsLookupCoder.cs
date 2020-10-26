@@ -41,13 +41,13 @@ namespace DevCodeCore.Coders.NetCore
 
         public async Task<LookupItem[]> airportsByIataAsync(string term)
         {
-            return await _db.Airport
+            return await _db.Airport // Rename source table and fields as required
                  .Where(c => c.IataIdent.StartsWith(term))
                  .OrderBy(c => c.IataIdent)
                  .Take(15)
                  .Select(c => new LookupItem()
                  {
-                     id = (int)c.AirportId,
+                     id = c.AirportId, // Rename source fields as required
                      text = c.IataIdent,
                      text2 = c.AirportName.Trim()
                  })
